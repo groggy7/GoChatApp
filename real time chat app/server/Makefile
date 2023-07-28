@@ -14,9 +14,9 @@ restart:
 	sudo docker restart postgres15
 
 migrateup:
-	migrate -path src/db/migrations -database "postgres://root:root@localhost:5433/go-chat?sslmode=disable" -verbose up
+	migrate -path src/db/migrations -database "postgres://root:root@localhost:5432/go-chat?sslmode=disable" -verbose up
 
 migratedown:
-	migrate -path src/db/migrations -database "postgres://root:root@localhost:5433/go-chat?sslmode=disable" -verbose down
+	migrate -path src/db/migrations -database "postgres://root:root@localhost:5432/go-chat?sslmode=disable" -verbose down
 
 .PHONY: postgresinit postgres createdb dropdb restart migrateup migratedown
