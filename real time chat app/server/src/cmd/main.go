@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 	"server/db"
-	"server/handlers"
-	"server/repositories"
-	"server/services"
+	"server/internal/handlers"
+	"server/internal/repositories"
+	"server/internal/services"
 
 	"github.com/gin-gonic/gin"
 )

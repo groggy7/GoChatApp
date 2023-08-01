@@ -2,8 +2,8 @@ package services
 
 import (
 	"context"
-	"server/models"
-	"server/repositories"
+	"server/internal/models"
+	"server/internal/repositories"
 )
 
 type UserService interface {

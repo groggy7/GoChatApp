@@ -1,8 +1,11 @@
 postgresinit:
 	sudo docker run --name postgres15 -p 5432:5432 -e POSTGRES_USER=root -e POSTGRES_PASSWORD=root -d postgres:15-alpine
 
-postgres:
+psql:
 	sudo docker exec -it postgres15 psql
+
+redis:
+	sudo docker exec -it redis7.2 redis-cli
 
 createdb:
 	sudo docker exec -it postgres15 createdb --username=root --owner=root go-chat
@@ -19,4 +22,4 @@ migrateup:
 migratedown:
 	migrate -path src/db/migrations -database "postgres://root:root@localhost:5432/go-chat?sslmode=disable" -verbose down
 
-.PHONY: postgresinit postgres createdb dropdb restart migrateup migratedown
+.PHONY: postgresinit psql redis createdb dropdb restart migrateup migratedown

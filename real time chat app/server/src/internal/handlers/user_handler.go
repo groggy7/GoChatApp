@@ -1,10 +1,12 @@
 package handlers
 
 import (
+	"log"
 	"net/http"
-	"server/models"
-	"server/services"
-	"server/util"
+	"server/internal/auth"
+	"server/internal/models"
+	"server/internal/services"
+	"server/internal/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -45,6 +47,7 @@ func (h *handler) Signup(ctx *gin.Context) {
 		return
 	}
 
+	auth.CreateSession(req.Username)
 	ctx.JSON(http.StatusCreated, response)
 }
 
@@ -67,6 +70,13 @@ func (h *handler) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusBadRequest, map[string]string{"message": "wrong username or password"})
 		return
 	}
+
+	session, err := auth.GetSession(user.Username)
+	if err != nil {
+		log.Println(err)
+	}
+
+	ctx.SetCookie("Auth", session.SessionID, session.Expiry.Day(), "/", "localhost", true, true)
 
 	ctx.JSON(http.StatusOK, map[string]string{"message": "Login Successful"})
 }

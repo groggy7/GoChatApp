@@ -3,7 +3,7 @@ package repositories
 import (
 	"context"
 	"database/sql"
-	"server/models"
+	"server/internal/models"
 )
 
 type UserRepository interface {
