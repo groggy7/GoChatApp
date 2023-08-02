@@ -18,18 +18,44 @@ type Session struct {
 	SessionID string
 }
 
+var client = redis.NewClient(&redis.Options{
+	Addr:     "localhost:6379",
+	Password: "",
+	DB:       1,
+})
+
+var sessions map[string]*Session
+
+func GetSessions() map[string]*Session {
+	return sessions
+}
+
+func InitSessionServer() {
+	sessions = make(map[string]*Session)
+	keys, err := client.Keys(context.Background(), "*").Result()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	for _, key := range keys {
+		value, err := client.Get(context.Background(), key).Result()
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+
+		var session Session
+		if err := json.Unmarshal([]byte(value), &session); err != nil {
+			log.Println(err)
+		}
+
+		sessions[key] = &session
+	}
+}
+
 func CreateSession(username string) *Session {
 	logger := log.New(os.Stdout, "", log.Lshortfile|log.LstdFlags)
-	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       1,
-	})
-
-	if err := client.Ping(context.Background()).Err(); err != nil {
-		logger.Println("Failed to connect to Redis:", err)
-		return nil
-	}
 
 	session := &Session{
 		Username:  username,
@@ -49,22 +75,10 @@ func CreateSession(username string) *Session {
 		panic(err)
 	}
 
-	val, err := client.Get(ctx, username).Result()
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(val)
-
 	return session
 }
 
 func GetSession(username string) (*Session, error) {
-	client := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       1,
-	})
-
 	sessionJSON, err := client.Get(context.Background(), username).Result()
 	if err != nil {
 		return nil, err
@@ -77,7 +91,3 @@ func GetSession(username string) (*Session, error) {
 
 	return &session, nil
 }
-
-/*func (s *Session) isExpired() bool {
-	return s.expiry.Before(time.Now())
-}*/

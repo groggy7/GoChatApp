@@ -14,6 +14,7 @@ import (
 type UserHandler interface {
 	Signup(ctx *gin.Context)
 	Login(ctx *gin.Context)
+	Homepage(ctx *gin.Context)
 }
 
 type handler struct {
@@ -76,7 +77,11 @@ func (h *handler) Login(ctx *gin.Context) {
 		log.Println(err)
 	}
 
-	ctx.SetCookie("Auth", session.SessionID, session.Expiry.Day(), "/", "localhost", true, true)
+	ctx.SetCookie("SessionID", session.SessionID, session.Expiry.Day(), "/", "localhost", true, true)
 
-	ctx.JSON(http.StatusOK, map[string]string{"message": "Login Successful"})
+	ctx.JSON(200, map[string]string{"message": "Login Successful"})
+}
+
+func (h *handler) Homepage(ctx *gin.Context) {
+	ctx.JSON(302, "Welcome to home page")
 }

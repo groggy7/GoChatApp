@@ -2,7 +2,9 @@ package main
 
 import (
 	"log"
-	"server/db"
+	"server/internal/auth"
+	"server/internal/auth/middleware"
+	"server/internal/db"
 	"server/internal/handlers"
 	"server/internal/repositories"
 	"server/internal/services"
@@ -21,9 +23,12 @@ func main() {
 	userHandler := handlers.NewUserHandler(&userService)
 
 	r := gin.Default()
+	go auth.InitSessionServer()
+	r.Use(middleware.AuthenticateSession())
 
 	r.POST("/signup", userHandler.Signup)
 	r.POST("/login", userHandler.Login)
+	r.GET("/home", userHandler.Homepage)
 
 	if err := r.Run("0.0.0.0:8080"); err != nil {
 		log.Fatalln(err)

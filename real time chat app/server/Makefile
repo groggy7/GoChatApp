@@ -13,8 +13,11 @@ createdb:
 dropdb:
 	sudo docker exec -it postgres15 dropdb go-chat
 
-restart:
+restart-psql:
 	sudo docker restart postgres15
+
+restart-redis:
+	sudo docker restart redis7.2
 
 migrateup:
 	migrate -path src/db/migrations -database "postgres://root:root@localhost:5432/go-chat?sslmode=disable" -verbose up
@@ -22,4 +25,4 @@ migrateup:
 migratedown:
 	migrate -path src/db/migrations -database "postgres://root:root@localhost:5432/go-chat?sslmode=disable" -verbose down
 
-.PHONY: postgresinit psql redis createdb dropdb restart migrateup migratedown
+.PHONY: postgresinit psql redis createdb dropdb restart-psql restart-redis migrateup migratedown
