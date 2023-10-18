@@ -1,9 +1,9 @@
 package services
 
 import (
+	"chatapp/server/internal/models"
+	"chatapp/server/internal/repositories"
 	"context"
-	"server/internal/models"
-	"server/internal/repositories"
 )
 
 type UserService interface {

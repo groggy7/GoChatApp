@@ -1,12 +1,12 @@
 package main
 
 import (
+	"chatapp/server/db"
+	"chatapp/server/internal/auth"
+	"chatapp/server/internal/handlers"
+	"chatapp/server/internal/repositories"
+	"chatapp/server/internal/services"
 	"log"
-	"server/db"
-	"server/internal/auth"
-	"server/internal/handlers"
-	"server/internal/repositories"
-	"server/internal/services"
 
 	"github.com/gin-gonic/gin"
 )
