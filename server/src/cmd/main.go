@@ -26,7 +26,6 @@ func main() {
 
 	r.POST("/signup", userHandler.Signup)
 	r.POST("/login", userHandler.Login)
-	r.GET("/home", userHandler.Homepage)
 
 	if err := r.Run("0.0.0.0:8080"); err != nil {
 		log.Fatalln(err)

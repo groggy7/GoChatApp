@@ -14,7 +14,6 @@ import (
 type UserHandler interface {
 	Signup(ctx *gin.Context)
 	Login(ctx *gin.Context)
-	Homepage(ctx *gin.Context)
 }
 
 type handler struct {
@@ -31,20 +30,20 @@ func (h *handler) Signup(ctx *gin.Context) {
 	var req models.CreateUserRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	hashedPassword, err := util.HashThePassword(req.Password)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 	req.Password = hashedPassword
 
 	response, err := h.userService.CreateUser(ctx, &req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -56,19 +55,19 @@ func (h *handler) Login(ctx *gin.Context) {
 	var req models.GetUserRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	user, err := h.userService.GetUserByEmail(ctx, &req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, map[string]string{"message": err.Error()})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	err = util.CheckHashAndPassword(user.Password, req.Password)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, map[string]string{"message": "wrong username or password"})
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "wrong username or password"})
 		return
 	}
 
@@ -79,9 +78,5 @@ func (h *handler) Login(ctx *gin.Context) {
 
 	ctx.SetCookie("SessionID", session.SessionID, session.Expiry.Day(), "/", "localhost", true, true)
 
-	ctx.JSON(200, map[string]string{"message": "Login Successful"})
-}
-
-func (h *handler) Homepage(ctx *gin.Context) {
-	ctx.JSON(302, "Welcome to home page")
+	ctx.JSON(200, gin.H{"message": "Login Successful"})
 }
