@@ -1,0 +1,14 @@
+# macOS specific files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Go files
+*.o
+*.a
+*.so
+*.test
+*.exe
+
+# Migrate package
+migrate
