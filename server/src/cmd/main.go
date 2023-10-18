@@ -2,8 +2,8 @@ package main
 
 import (
 	"log"
+	"server/db"
 	"server/internal/auth"
-	"server/internal/db"
 	"server/internal/handlers"
 	"server/internal/repositories"
 	"server/internal/services"

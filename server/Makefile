@@ -20,7 +20,7 @@ restart-redis:
 	sudo docker restart redis7.2
 
 migrateup:
-	./migrate -path src/internal/db/migrations -database "postgres://root:root@localhost:5432/go-chat?sslmode=disable" -verbose up
+	./migrate -path src/db/migrations -database "postgres://root:root@localhost:5432/go-chat?sslmode=disable" -verbose up
 
 migratedown:
 	./migrate -path src/db/migrations -database "postgres://root:root@localhost:5432/go-chat?sslmode=disable" -verbose down
