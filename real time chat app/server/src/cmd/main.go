@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 	"server/internal/auth"
-	"server/internal/auth/middleware"
 	"server/internal/db"
 	"server/internal/handlers"
 	"server/internal/repositories"
@@ -24,7 +23,6 @@ func main() {
 
 	r := gin.Default()
 	go auth.InitSessionServer()
-	r.Use(middleware.AuthenticateSession())
 
 	r.POST("/signup", userHandler.Signup)
 	r.POST("/login", userHandler.Login)
