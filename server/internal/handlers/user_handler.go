@@ -1,12 +1,12 @@
 package handlers
 
 import (
-	"chatapp/server/internal/auth"
-	"chatapp/server/internal/models"
-	"chatapp/server/internal/services"
-	"chatapp/server/internal/util"
 	"log"
 	"net/http"
+	"server/internal/auth"
+	"server/internal/models"
+	"server/internal/services"
+	"server/internal/util"
 
 	"github.com/gin-gonic/gin"
 )

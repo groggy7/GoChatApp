@@ -1,12 +1,13 @@
 package main
 
 import (
-	"chatapp/server/db"
-	"chatapp/server/internal/auth"
-	"chatapp/server/internal/handlers"
-	"chatapp/server/internal/repositories"
-	"chatapp/server/internal/services"
 	"log"
+	"server/db"
+	"server/internal/auth"
+	"server/internal/handlers"
+	"server/internal/repositories"
+	"server/internal/services"
+	"server/internal/ws"
 
 	"github.com/gin-gonic/gin"
 )
@@ -27,6 +28,7 @@ func main() {
 	r.POST("/signup", userHandler.Signup)
 	r.POST("/login", userHandler.Login)
 
+	r.GET("/ws/createroom", ws.CreateRoom)
 	if err := r.Run("0.0.0.0:8080"); err != nil {
 		log.Fatalln(err)
 	}

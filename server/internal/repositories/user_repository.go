@@ -1,9 +1,9 @@
 package repositories
 
 import (
-	"chatapp/server/internal/models"
 	"context"
 	"database/sql"
+	"server/internal/models"
 )
 
 type UserRepository interface {
