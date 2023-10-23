@@ -11,17 +11,17 @@ type UserService interface {
 	GetUserByEmail(ctx context.Context, req *models.GetUserRequest) (*models.GetUserResponse, error)
 }
 
-type service struct {
+type userService struct {
 	userRepository repositories.UserRepository
 }
 
 func NewUserService(r *repositories.UserRepository) UserService {
-	return &service{
+	return &userService{
 		userRepository: *r,
 	}
 }
 
-func (s *service) CreateUser(ctx context.Context, req *models.CreateUserRequest) (*models.CreateUserResponse, error) {
+func (s *userService) CreateUser(ctx context.Context, req *models.CreateUserRequest) (*models.CreateUserResponse, error) {
 	user := &models.User{
 		Username: req.Username,
 		Email:    req.Email,
@@ -41,7 +41,7 @@ func (s *service) CreateUser(ctx context.Context, req *models.CreateUserRequest)
 	return &resp, nil
 }
 
-func (s *service) GetUserByEmail(ctx context.Context, req *models.GetUserRequest) (*models.GetUserResponse, error) {
+func (s *userService) GetUserByEmail(ctx context.Context, req *models.GetUserRequest) (*models.GetUserResponse, error) {
 	user, err := s.userRepository.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, err

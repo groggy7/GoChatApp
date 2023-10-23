@@ -6,30 +6,35 @@ import (
 	"server/internal/auth"
 	"server/internal/handlers"
 	"server/internal/repositories"
+	"server/internal/router"
 	"server/internal/services"
 	"server/internal/ws"
 
-	"github.com/gin-gonic/gin"
+	"github.com/gin-contrib/cors"
 )
+
+var chatServer ws.ChatServer
 
 func main() {
 	db, err := db.NewDatabase()
 	if err != nil {
 		log.Println(err)
 	}
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://127.0.0.1:5500"}
+	config.AllowMethods = []string{"GET", "POST", "OPTIONS"}
 
-	userRepository := repositories.NewUserRepository(db.GetDB())
-	userService := services.NewUserService(&userRepository)
+	userRepo := repositories.NewUserRepository(db.GetDB())
+	userService := services.NewUserService(&userRepo)
 	userHandler := handlers.NewUserHandler(&userService)
 
-	r := gin.Default()
+	roomRepo := repositories.NewRoomRepository()
+	roomService := services.NewRoomService(&roomRepo)
+	roomHandler := handlers.NewRoomHandler(&roomService)
+
+	router.StartRouter(userHandler, roomHandler, config)
+	chatServer = ws.NewChatServer()
+
 	go auth.InitSessionServer()
 
-	r.POST("/signup", userHandler.Signup)
-	r.POST("/login", userHandler.Login)
-
-	r.GET("/ws/createroom", ws.CreateRoom)
-	if err := r.Run("0.0.0.0:8080"); err != nil {
-		log.Fatalln(err)
-	}
 }

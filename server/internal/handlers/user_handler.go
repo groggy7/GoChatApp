@@ -16,17 +16,17 @@ type UserHandler interface {
 	Login(ctx *gin.Context)
 }
 
-type handler struct {
+type userHandler struct {
 	userService services.UserService
 }
 
 func NewUserHandler(svc *services.UserService) UserHandler {
-	return &handler{
+	return &userHandler{
 		userService: *svc,
 	}
 }
 
-func (h *handler) Signup(ctx *gin.Context) {
+func (h *userHandler) Signup(ctx *gin.Context) {
 	var req models.CreateUserRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
@@ -51,7 +51,7 @@ func (h *handler) Signup(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, response)
 }
 
-func (h *handler) Login(ctx *gin.Context) {
+func (h *userHandler) Login(ctx *gin.Context) {
 	var req models.GetUserRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
