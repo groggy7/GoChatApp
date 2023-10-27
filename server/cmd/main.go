@@ -13,8 +13,6 @@ import (
 	"github.com/gin-contrib/cors"
 )
 
-var chatServer ws.ChatServer
-
 func main() {
 	db, err := db.NewDatabase()
 	if err != nil {
@@ -28,13 +26,9 @@ func main() {
 	userService := services.NewUserService(&userRepo)
 	userHandler := handlers.NewUserHandler(&userService)
 
-	roomRepo := repositories.NewRoomRepository()
-	roomService := services.NewRoomService(&roomRepo)
-	roomHandler := handlers.NewRoomHandler(&roomService)
-
-	router.StartRouter(userHandler, roomHandler, config)
-	chatServer = ws.NewChatServer()
-
+	cs := ws.NewChatServer()
+	go cs.StartServer()
 	go auth.InitSessionServer()
 
+	router.StartRouter(userHandler, config)
 }

@@ -9,7 +9,10 @@ require (
 	golang.org/x/crypto v0.14.0
 )
 
-require github.com/gin-contrib/cors v1.4.0 // indirect
+require (
+	github.com/gin-contrib/cors v1.4.0 // indirect
+	github.com/google/uuid v1.3.1 // indirect
+)
 
 require (
 	github.com/bytedance/sonic v1.9.1 // indirect

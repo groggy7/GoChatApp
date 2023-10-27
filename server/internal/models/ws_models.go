@@ -2,23 +2,24 @@ package models
 
 import "github.com/gorilla/websocket"
 
+type Hub struct {
+	Rooms   []Room
+	Clients []Client
+}
+
 type Room struct {
-	RoomId      int          `json:"roomId"`
+	Id          int          `json:"idd"`
 	Clients     []Client     `json:"clients"`
 	MessageChan chan Message `json:"messageChan"`
+}
+
+type Client struct {
+	Username   string
+	Connection *websocket.Conn
 }
 
 type Message struct {
 	Content string `json:"content"`
 	Client  Client `json:"client"`
 	Room    Room   `json:"room"`
-}
-
-type Client struct {
-	Username   string          `json:"username"`
-	Connection *websocket.Conn `json:"connection"`
-}
-
-type Hub struct {
-	Rooms []Room
 }
