@@ -1,14 +1,13 @@
-package repositories
+package user
 
 import (
 	"context"
 	"database/sql"
-	"server/internal/models"
 )
 
 type UserRepository interface {
-	CreateUser(ctx context.Context, user *models.User) (*models.User, error)
-	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
+	CreateUser(ctx context.Context, user *User) (*User, error)
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
 }
 
 type repository struct {
@@ -21,7 +20,7 @@ func NewUserRepository(db *sql.DB) UserRepository {
 	}
 }
 
-func (r *repository) CreateUser(ctx context.Context, user *models.User) (*models.User, error) {
+func (r *repository) CreateUser(ctx context.Context, user *User) (*User, error) {
 	query := "INSERT INTO users(username, email, password) VALUES($1, $2, $3) returning id"
 
 	stmt, err := r.db.Prepare(query)
@@ -36,7 +35,7 @@ func (r *repository) CreateUser(ctx context.Context, user *models.User) (*models
 	return user, nil
 }
 
-func (r *repository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+func (r *repository) GetUserByEmail(ctx context.Context, email string) (*User, error) {
 	query := "SELECT * FROM users WHERE email = $1"
 
 	stmt, err := r.db.Prepare(query)
@@ -44,7 +43,7 @@ func (r *repository) GetUserByEmail(ctx context.Context, email string) (*models.
 		return nil, err
 	}
 
-	var user models.User
+	var user User
 
 	if err := stmt.QueryRow(email).Scan(&user.Id, &user.Username, &user.Email, &user.Password); err != nil {
 		return nil, err

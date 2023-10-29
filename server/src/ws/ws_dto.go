@@ -1,4 +1,4 @@
-package models
+package ws
 
 type JoinRoomRequest struct {
 	Username string `json:"username"`

@@ -1,12 +1,10 @@
-package handlers
+package user
 
 import (
 	"log"
 	"net/http"
-	"server/internal/auth"
-	"server/internal/models"
-	"server/internal/services"
-	"server/internal/util"
+	"server/src/auth"
+	"server/src/util"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,17 +15,17 @@ type UserHandler interface {
 }
 
 type userHandler struct {
-	userService services.UserService
+	userService UserService
 }
 
-func NewUserHandler(svc *services.UserService) UserHandler {
+func NewUserHandler(svc *UserService) UserHandler {
 	return &userHandler{
 		userService: *svc,
 	}
 }
 
 func (h *userHandler) Signup(ctx *gin.Context) {
-	var req models.CreateUserRequest
+	var req CreateUserRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -52,7 +50,7 @@ func (h *userHandler) Signup(ctx *gin.Context) {
 }
 
 func (h *userHandler) Login(ctx *gin.Context) {
-	var req models.GetUserRequest
+	var req GetUserRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -2,13 +2,13 @@ package router
 
 import (
 	"log"
-	"server/internal/handlers"
+	"server/src/user"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-func StartRouter(userHandler handlers.UserHandler, corsConfig cors.Config) {
+func StartRouter(userHandler user.UserHandler, corsConfig cors.Config) {
 	r := gin.Default()
 
 	r.POST("/signup", userHandler.Signup)

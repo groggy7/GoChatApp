@@ -4,23 +4,22 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"server/internal/models"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 )
 
 type ChatServer struct {
-	Hub      models.Hub
+	Hub      Hub
 	Upgrader websocket.Upgrader
 	Logger   *log.Logger
 }
 
 func NewChatServer() ChatServer {
 	return ChatServer{
-		Hub: models.Hub{
-			Rooms:   []models.Room{},
-			Clients: []models.Client{},
+		Hub: Hub{
+			Rooms:   []Room{},
+			Clients: []Client{},
 		},
 		Upgrader: websocket.Upgrader{
 			ReadBufferSize:  1024,
@@ -48,7 +47,7 @@ func (cs *ChatServer) StartServer() {
 
 func (cs *ChatServer) handleIncomingMessages() {
 	for _, room := range cs.Hub.Rooms {
-		go func(room models.Room) {
+		go func(room Room) {
 			message := <-room.MessageChan
 
 			for _, client := range room.Clients {
@@ -70,7 +69,7 @@ func (cs *ChatServer) handleWebSocket(ctx *gin.Context) {
 		return
 	}
 
-	newClient := models.Client{
+	newClient := Client{
 		Username:   username,
 		Connection: conn,
 	}
@@ -79,23 +78,23 @@ func (cs *ChatServer) handleWebSocket(ctx *gin.Context) {
 }
 
 func (cs *ChatServer) CreateRoom(ctx *gin.Context) {
-	newRoom := models.Room{
+	newRoom := Room{
 		Id:          len(cs.Hub.Rooms) + 1,
 		Clients:     nil,
-		MessageChan: make(chan models.Message),
+		MessageChan: make(chan Message),
 	}
 
 	cs.Hub.Rooms = append(cs.Hub.Rooms, newRoom)
 }
 
 func (cs *ChatServer) JoinRoom(ctx *gin.Context) {
-	var req models.JoinRoomRequest
+	var req JoinRoomRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var matchedClient *models.Client
+	var matchedClient *Client
 	for _, client := range cs.Hub.Clients {
 		if client.Username == req.Username {
 			matchedClient = &client
@@ -106,7 +105,7 @@ func (cs *ChatServer) JoinRoom(ctx *gin.Context) {
 		return
 	}
 
-	var matchedRoom *models.Room
+	var matchedRoom *Room
 	for _, room := range cs.Hub.Rooms {
 		if room.Id == req.RoomId {
 			matchedRoom = &room
@@ -121,13 +120,13 @@ func (cs *ChatServer) JoinRoom(ctx *gin.Context) {
 }
 
 func (cs *ChatServer) SendMessage(ctx *gin.Context) {
-	var req models.SendMessageRequest
+	var req SendMessageRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	var matchedClient *models.Client
+	var matchedClient *Client
 	for _, client := range cs.Hub.Clients {
 		if client.Username == req.Username {
 			matchedClient = &client
@@ -138,7 +137,7 @@ func (cs *ChatServer) SendMessage(ctx *gin.Context) {
 		return
 	}
 
-	var matchedRoom *models.Room
+	var matchedRoom *Room
 	for _, room := range cs.Hub.Rooms {
 		if room.Id == req.RoomId {
 			matchedRoom = &room
@@ -149,7 +148,7 @@ func (cs *ChatServer) SendMessage(ctx *gin.Context) {
 		return
 	}
 
-	message := models.Message{
+	message := Message{
 		Content: req.Content,
 		Client:  *matchedClient,
 		Room:    *matchedRoom,

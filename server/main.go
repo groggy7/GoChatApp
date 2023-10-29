@@ -3,12 +3,10 @@ package main
 import (
 	"log"
 	"server/db"
-	"server/internal/auth"
-	"server/internal/handlers"
-	"server/internal/repositories"
-	"server/internal/router"
-	"server/internal/services"
-	"server/internal/ws"
+	"server/src/auth"
+	"server/src/router"
+	"server/src/user"
+	"server/src/ws"
 
 	"github.com/gin-contrib/cors"
 )
@@ -22,9 +20,9 @@ func main() {
 	config.AllowOrigins = []string{"http://127.0.0.1:5500"}
 	config.AllowMethods = []string{"GET", "POST", "OPTIONS"}
 
-	userRepo := repositories.NewUserRepository(db.GetDB())
-	userService := services.NewUserService(&userRepo)
-	userHandler := handlers.NewUserHandler(&userService)
+	userRepo := user.NewUserRepository(db.GetDB())
+	userService := user.NewUserService(&userRepo)
+	userHandler := user.NewUserHandler(&userService)
 
 	cs := ws.NewChatServer()
 	go cs.StartServer()

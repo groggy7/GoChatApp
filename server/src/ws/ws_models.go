@@ -1,4 +1,4 @@
-package models
+package ws
 
 import "github.com/gorilla/websocket"
 
