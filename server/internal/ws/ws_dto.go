@@ -5,10 +5,6 @@ type JoinRoomRequest struct {
 	RoomId   int    `json:"roomid"`
 }
 
-type CreateRoomResponse struct {
-	RoomId int
-}
-
 type SendMessageRequest struct {
 	Content  string `json:"content"`
 	Username string `json:"client"`

@@ -8,7 +8,8 @@ type Hub struct {
 }
 
 type Room struct {
-	Id          int          `json:"idd"`
+	Id          int          `json:"id"`
+	Name        string       `json:"name"`
 	Clients     []Client     `json:"clients"`
 	MessageChan chan Message `json:"messageChan"`
 }
