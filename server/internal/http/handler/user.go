@@ -61,13 +61,13 @@ func (h *userHandler) Login(ctx *gin.Context) {
 
 	user, err := h.userService.GetUserByEmail(ctx, &req)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
 	err = util.CheckHashAndPassword(user.Password, req.Password)
 	if err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "wrong username or password"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "wrong username or password"})
 		return
 	}
 

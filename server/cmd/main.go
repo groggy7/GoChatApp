@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	db, err := db.NewDatabase()
+	db, err := db.Connect()
 	if err != nil {
 		log.Println(err)
 	}
@@ -24,7 +24,7 @@ func main() {
 	config.AllowOrigins = []string{"http://127.0.0.1:5500"}
 	config.AllowMethods = []string{"GET", "POST", "OPTIONS"}
 
-	userRepo := repository.NewUserRepository(db.GetDB())
+	userRepo := repository.NewUserRepository(db.Conn)
 	userService := service.NewUserService(&userRepo)
 	userHandler := handler.NewUserHandler(&userService)
 

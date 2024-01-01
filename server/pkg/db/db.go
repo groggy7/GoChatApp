@@ -7,24 +7,20 @@ import (
 )
 
 type Database struct {
-	db *sql.DB
+	Conn *sql.DB
 }
 
-func NewDatabase() (*Database, error) {
+func Connect() (*Database, error) {
 	db, err := sql.Open("postgres", "postgres://root:root@localhost:5432/go-chat?sslmode=disable")
 	if err != nil {
 		return nil, err
 	}
 
-	return &Database{db: db}, nil
+	return &Database{Conn: db}, nil
 }
 
 func (d *Database) CloseConnection() {
-	if err := d.db.Close(); err != nil {
+	if err := d.Conn.Close(); err != nil {
 		panic(err)
 	}
-}
-
-func (d *Database) GetDB() *sql.DB {
-	return d.db
 }
