@@ -1,4 +1,4 @@
-package router
+package server
 
 import (
 	"log"
@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func StartRouter(userHandler handler.UserHandler, chatHandler ws.ChatHandler, corsConfig cors.Config) {
+func StartEngine(userHandler handler.UserHandler, chatHandler ws.ChatHandler, corsConfig cors.Config) *gin.Engine {
 	r := gin.Default()
 
 	r.Use(cors.New(corsConfig))
@@ -23,8 +23,14 @@ func StartRouter(userHandler handler.UserHandler, chatHandler ws.ChatHandler, co
 	r.GET("/ws/create", chatHandler.CreateRoom)
 	r.GET("/ws/join", chatHandler.JoinRoom)
 
+	return r
+}
+
+func StartServer(engine *gin.Engine) error {
 	log.Println("Started http server at port 8080")
-	if err := r.Run("0.0.0.0:8080"); err != nil {
-		log.Fatalln(err)
+	if err := engine.Run("0.0.0.0:8080"); err != nil {
+		return err
 	}
+
+	return nil
 }

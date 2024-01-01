@@ -4,7 +4,7 @@ import (
 	"log"
 
 	"server/internal/http/handler"
-	"server/internal/http/router"
+	"server/internal/http/server"
 
 	"server/internal/ws"
 	"server/pkg/db"
@@ -29,5 +29,5 @@ func main() {
 
 	chatHandler := ws.NewChatHandler()
 
-	router.StartRouter(userHandler, *chatHandler, config)
+	server.StartEngine(userHandler, *chatHandler, config)
 }
