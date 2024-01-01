@@ -1,10 +1,8 @@
 package handler
 
 import (
-	"log"
 	"net/http"
-	"server/internal/http/auth"
-	"server/pkg/model"
+	"server/pkg/dto"
 	"server/pkg/service"
 	"server/pkg/util"
 
@@ -27,7 +25,7 @@ func NewUserHandler(svc *service.UserService) UserHandler {
 }
 
 func (h *userHandler) Signup(ctx *gin.Context) {
-	var req model.CreateUserRequest
+	var req dto.CreateUserRequest
 
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -47,12 +45,12 @@ func (h *userHandler) Signup(ctx *gin.Context) {
 		return
 	}
 
-	auth.CreateSession(req.Username)
+	service.CreateSession(req.Username)
 	ctx.JSON(http.StatusCreated, response)
 }
 
 func (h *userHandler) Login(ctx *gin.Context) {
-	var req model.GetUserRequest
+	var req dto.GetUserRequest
 
 	if err := ctx.BindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -70,13 +68,6 @@ func (h *userHandler) Login(ctx *gin.Context) {
 		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "wrong username or password"})
 		return
 	}
-
-	session, err := auth.GetSession(user.Username)
-	if err != nil {
-		log.Println(err)
-	}
-
-	ctx.SetCookie("SessionID", session.SessionID, session.Expiry.Day(), "/", "localhost", true, true)
 
 	ctx.JSON(200, gin.H{"message": "Login Successful"})
 }

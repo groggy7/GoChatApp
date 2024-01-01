@@ -1,4 +1,4 @@
-package model
+package dto
 
 type CreateUserRequest struct {
 	Username string `json:"username" db:"username"`

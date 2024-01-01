@@ -3,7 +3,6 @@ package main
 import (
 	"log"
 
-	"server/internal/http/auth"
 	"server/internal/http/handler"
 	"server/internal/http/router"
 
@@ -29,9 +28,6 @@ func main() {
 	userHandler := handler.NewUserHandler(&userService)
 
 	chatHandler := ws.NewChatHandler()
-	go chatHandler.WaitForMessages()
-
-	go auth.InitSessionServer()
 
 	router.StartRouter(userHandler, *chatHandler, config)
 }

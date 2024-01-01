@@ -2,13 +2,14 @@ package service
 
 import (
 	"context"
+	"server/pkg/dto"
 	"server/pkg/model"
 	"server/pkg/repository"
 )
 
 type UserService interface {
-	CreateUser(ctx context.Context, req *model.CreateUserRequest) (*model.CreateUserResponse, error)
-	GetUserByEmail(ctx context.Context, req *model.GetUserRequest) (*model.GetUserResponse, error)
+	CreateUser(ctx context.Context, req *dto.CreateUserRequest) (*dto.CreateUserResponse, error)
+	GetUserByEmail(ctx context.Context, req *dto.GetUserRequest) (*dto.GetUserResponse, error)
 }
 
 type userService struct {
@@ -21,7 +22,7 @@ func NewUserService(r *repository.UserRepository) UserService {
 	}
 }
 
-func (s *userService) CreateUser(ctx context.Context, req *model.CreateUserRequest) (*model.CreateUserResponse, error) {
+func (s *userService) CreateUser(ctx context.Context, req *dto.CreateUserRequest) (*dto.CreateUserResponse, error) {
 	user := &model.User{
 		Username: req.Username,
 		Email:    req.Email,
@@ -32,7 +33,7 @@ func (s *userService) CreateUser(ctx context.Context, req *model.CreateUserReque
 		return nil, err
 	}
 
-	resp := model.CreateUserResponse{
+	resp := dto.CreateUserResponse{
 		Id:       user.Id,
 		Username: req.Username,
 		Email:    req.Email,
@@ -41,13 +42,13 @@ func (s *userService) CreateUser(ctx context.Context, req *model.CreateUserReque
 	return &resp, nil
 }
 
-func (s *userService) GetUserByEmail(ctx context.Context, req *model.GetUserRequest) (*model.GetUserResponse, error) {
+func (s *userService) GetUserByEmail(ctx context.Context, req *dto.GetUserRequest) (*dto.GetUserResponse, error) {
 	user, err := s.userRepository.GetUserByEmail(ctx, req.Email)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := &model.GetUserResponse{
+	resp := &dto.GetUserResponse{
 		Id:       user.Id,
 		Username: user.Username,
 		Email:    user.Email,
