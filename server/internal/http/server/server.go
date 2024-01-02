@@ -7,14 +7,12 @@ import (
 	"server/internal/http/middleware"
 	"server/internal/ws"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
-func StartEngine(userHandler handler.UserHandler, chatHandler ws.ChatHandler, corsConfig cors.Config) *gin.Engine {
+func StartEngine(userHandler handler.UserHandler, chatHandler ws.ChatHandler) *gin.Engine {
 	r := gin.Default()
 
-	r.Use(cors.New(corsConfig))
 	r.Use(middleware.GetSessionMiddleware())
 
 	r.POST("/signup", userHandler.Signup)

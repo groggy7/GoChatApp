@@ -10,8 +10,6 @@ import (
 	"server/pkg/db"
 	"server/pkg/repository"
 	"server/pkg/service"
-
-	"github.com/gin-contrib/cors"
 )
 
 func main() {
@@ -19,9 +17,6 @@ func main() {
 	if err != nil {
 		log.Println(err)
 	}
-	config := cors.DefaultConfig()
-	config.AllowOrigins = []string{"http://127.0.0.1:5500"}
-	config.AllowMethods = []string{"GET", "POST", "OPTIONS"}
 
 	userRepo := repository.NewUserRepository(db.Conn)
 	userService := service.NewUserService(&userRepo)
@@ -29,5 +24,9 @@ func main() {
 
 	chatHandler := ws.NewChatHandler()
 
-	server.StartEngine(userHandler, *chatHandler, config)
+	engine := server.StartEngine(userHandler, *chatHandler)
+
+	if err := server.StartServer(engine); err != nil {
+		log.Fatalln(err)
+	}
 }
