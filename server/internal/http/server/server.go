@@ -19,7 +19,7 @@ func StartEngine(userHandler handler.UserHandler, chatHandler ws.ChatHandler) *g
 	r.POST("/login/:username", userHandler.Login)
 
 	r.GET("/ws/create", chatHandler.CreateRoom)
-	r.GET("/ws/join", chatHandler.JoinRoom)
+	r.GET("/ws/join/:username/:roomid", chatHandler.JoinRoom)
 
 	return r
 }

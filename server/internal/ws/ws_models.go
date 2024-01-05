@@ -3,8 +3,7 @@ package ws
 import "github.com/gorilla/websocket"
 
 type Hub struct {
-	Rooms   []Room
-	Clients []Client
+	Rooms []Room
 }
 
 type Room struct {
@@ -21,6 +20,4 @@ type Client struct {
 
 type Message struct {
 	Content string `json:"content"`
-	Client  Client `json:"client"`
-	Room    Room   `json:"room"`
 }

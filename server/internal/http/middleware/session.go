@@ -3,7 +3,6 @@ package middleware
 import (
 	"context"
 	"encoding/json"
-	"log"
 	"net/http"
 	"server/pkg/model"
 	"server/pkg/service"
@@ -17,8 +16,6 @@ func GetSessionMiddleware() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		if ctx.Request.URL.Path == "/login" {
 			username := ctx.Param("username")
-			log.Println("in session middleware")
-			log.Println(username)
 			sessionJSON, err := client.Get(context.Background(), username).Result()
 			if err != nil {
 				ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
