@@ -16,8 +16,8 @@ type ChatHandler struct {
 	Logger   *log.Logger
 }
 
-func NewChatHandler() *ChatHandler {
-	return &ChatHandler{
+func NewChatHandler() ChatHandler {
+	return ChatHandler{
 		Hub: Hub{
 			Rooms: []Room{},
 		},
