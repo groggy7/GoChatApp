@@ -72,12 +72,9 @@ func (ch *ChatHandler) JoinRoom(ctx *gin.Context) {
 	}
 
 	if rm == nil {
-		rm = &Room{
-			Id:          int(roomid),
-			Clients:     make([]Client, 0),
-			MessageChan: make(chan Message),
-		}
-		ch.Hub.Rooms = append(ch.Hub.Rooms, *rm)
+		cl.Connection.WriteMessage(websocket.CloseMessage, []byte("No such room found"))
+		cl.Connection.Close()
+		return
 	}
 
 	rm.Clients = append(rm.Clients, cl)
@@ -89,29 +86,29 @@ func (ch *ChatHandler) JoinRoom(ctx *gin.Context) {
 		rm.MessageChan <- message
 	}
 
-	defer func() {
-		ch.Logger.Printf("%d user is connected to this room now", len(rm.Clients))
-		ch.Logger.Printf("%s disconnected\n", cl.Username)
-		cl.Connection.Close()
-	}()
-
-	ch.ProcessMessages(*rm, cl, conn)
+	go ch.WaitForMessage(cl.Connection, rm)
+	go ch.ProcessMessages()
 }
 
-func (ch *ChatHandler) ProcessMessages(rm Room, cl Client, conn *websocket.Conn) {
+func (ch *ChatHandler) WaitForMessage(conn *websocket.Conn, rm *Room) {
 	for {
 		msg := Message{}
 		if err := conn.ReadJSON(&msg); err != nil {
 			ch.Logger.Println("Error reading from WebSocket:", err)
 			break
 		}
+		rm.MessageChan <- msg
+	}
+}
 
-		for _, client := range rm.Clients {
-			if client.Connection != cl.Connection {
-				if err := client.Connection.WriteJSON(&msg); err != nil {
-					ch.Logger.Println("Error sending message:", err)
-					break
-				}
+func (ch *ChatHandler) ProcessMessages() {
+	for {
+		for _, room := range ch.Hub.Rooms {
+			select {
+			case message := <-room.MessageChan:
+				log.Println(message)
+			default:
+				// No message available, continue to the next room
 			}
 		}
 	}
