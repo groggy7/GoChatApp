@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
@@ -95,8 +96,12 @@ func (ch *ChatHandler) WaitForMessage(conn *websocket.Conn, rm *Room) {
 		msg := Message{}
 		if err := conn.ReadJSON(&msg); err != nil {
 			ch.Logger.Println("Error reading from WebSocket:", err)
+			if err := conn.Close(); err != nil {
+				ch.Logger.Println(err)
+			}
 			break
 		}
+		msg.Timestamp = time.Now()
 		rm.MessageChan <- msg
 	}
 }
@@ -106,9 +111,10 @@ func (ch *ChatHandler) ProcessMessages() {
 		for _, room := range ch.Hub.Rooms {
 			select {
 			case message := <-room.MessageChan:
-				log.Println(message)
+				for _, client := range room.Clients {
+					client.Connection.WriteJSON(message)
+				}
 			default:
-				// No message available, continue to the next room
 			}
 		}
 	}

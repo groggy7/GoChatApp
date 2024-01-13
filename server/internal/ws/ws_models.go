@@ -1,6 +1,10 @@
 package ws
 
-import "github.com/gorilla/websocket"
+import (
+	"time"
+
+	"github.com/gorilla/websocket"
+)
 
 type Hub struct {
 	Rooms []Room
@@ -19,5 +23,7 @@ type Client struct {
 }
 
 type Message struct {
-	Content string `json:"content"`
+	Content   string    `json:"content"`
+	Username  string    `json:"username"`
+	Timestamp time.Time `json:"-"`
 }
