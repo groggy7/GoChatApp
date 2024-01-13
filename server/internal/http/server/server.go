@@ -10,7 +10,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func CreateEngine(userHandler handler.UserHandler, chatHandler ws.ChatHandler) *gin.Engine {
+func CreateEngine(userHandler handler.UserHandler, chatHandler *ws.ChatHandler) *gin.Engine {
 	r := gin.Default()
 
 	r.Use(middleware.GetSessionMiddleware())

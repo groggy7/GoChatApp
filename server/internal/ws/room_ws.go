@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"sync"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -15,6 +16,7 @@ type ChatHandler struct {
 	Hub      Hub
 	Upgrader websocket.Upgrader
 	Logger   *log.Logger
+	wg       sync.WaitGroup
 }
 
 func NewChatHandler() ChatHandler {
@@ -87,11 +89,13 @@ func (ch *ChatHandler) JoinRoom(ctx *gin.Context) {
 		rm.MessageChan <- message
 	}
 
+	ch.wg.Add(2)
 	go ch.WaitForMessage(cl.Connection, rm)
 	go ch.ProcessMessages()
 }
 
 func (ch *ChatHandler) WaitForMessage(conn *websocket.Conn, rm *Room) {
+	defer ch.wg.Done()
 	for {
 		msg := Message{}
 		if err := conn.ReadJSON(&msg); err != nil {
@@ -107,15 +111,33 @@ func (ch *ChatHandler) WaitForMessage(conn *websocket.Conn, rm *Room) {
 }
 
 func (ch *ChatHandler) ProcessMessages() {
+	defer ch.wg.Done()
 	for {
 		for _, room := range ch.Hub.Rooms {
 			select {
 			case message := <-room.MessageChan:
 				for _, client := range room.Clients {
-					client.Connection.WriteJSON(message)
+					err := client.Connection.WriteJSON(message)
+					if err != nil {
+						ch.Logger.Printf("Error writing to WebSocket for %s in room %d: %v", client.Username, room.Id, err)
+						ch.RemoveClientFromRoom(&client, &room)
+						if err := client.Connection.Close(); err != nil {
+							ch.Logger.Println(err)
+						}
+
+					}
 				}
 			default:
 			}
+		}
+	}
+}
+
+func (ch *ChatHandler) RemoveClientFromRoom(client *Client, room *Room) {
+	for i, c := range room.Clients {
+		if c == *client {
+			room.Clients = append(room.Clients[:i], room.Clients[i+1:]...)
+			return
 		}
 	}
 }

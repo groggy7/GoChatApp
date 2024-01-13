@@ -24,7 +24,7 @@ func main() {
 
 	chatHandler := ws.NewChatHandler()
 
-	engine := server.CreateEngine(userHandler, chatHandler)
+	engine := server.CreateEngine(userHandler, &chatHandler)
 
 	if err := server.StartServer(engine); err != nil {
 		log.Fatalln(err)
